@@ -39,6 +39,7 @@ async def add_issue(*, user_id: int, book_id: int):
 
 async def user_have_book(*, user_fn: str, user_ln: str, user_email: str):
     books = []
+    issues = []
     user = await user_repo.read_object(
         first_name=user_fn,
         last_name=user_ln,
@@ -53,11 +54,11 @@ async def user_have_book(*, user_fn: str, user_ln: str, user_email: str):
     issue = await issue_repo.read_object(
         user_id=user
     )
+    book = await book_repo.read_object()
     for item in issue:
-        book = await book_repo.read_object(
-            id=item.id
-        )
-        for b in book:
+        issues.append(item.book_id)
+    for b in book:
+        if b.id in issues:
             books.append(b)
     return books
 

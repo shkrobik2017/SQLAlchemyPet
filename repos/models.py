@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Date, ForeignKey
-from sqlalchemy.orm import declarative_base, Mapped
+from sqlalchemy.orm import declarative_base, Mapped, relationship
 from datetime import datetime, timedelta, date
 
 Base = declarative_base()
@@ -15,6 +15,11 @@ class User(Base):
     last_name: Mapped[str] = Column(String(50))
     email: Mapped[str] = Column(String(50), nullable=True)
 
+    issues: Mapped["Issue"] = relationship(
+        back_populates="user",
+        cascade="delete"
+    )
+
 
 class Book(Base):
     __tablename__ = "books"
@@ -23,6 +28,11 @@ class Book(Base):
     title: Mapped[str] = Column(String(50))
     author: Mapped[str] = Column(String(50))
     publication_year: Mapped[int] = Column(Integer, default=date.year)
+
+    issues: Mapped["Issue"] = relationship(
+        back_populates="book",
+        cascade="delete"
+    )
 
 
 class Issue(Base):
@@ -33,4 +43,11 @@ class Issue(Base):
     user_id: Mapped[int] = Column(Integer, ForeignKey("users.id"))
     issue_date: Mapped[datetime.date] = Column(Date, default=date.today())
     return_period: Mapped[datetime.date] = Column(Date, default=(date.today() + timedelta(days=30)))
+
+    user: Mapped["User"] = relationship(
+        back_populates="issues"
+    )
+    book: Mapped["Book"] = relationship(
+        back_populates="issues"
+    )
 
