@@ -17,7 +17,9 @@ class User(Base):
 
     issues: Mapped["Issue"] = relationship(
         back_populates="user",
-        cascade="delete"
+        cascade="delete",
+        primaryjoin="User.id == Issue.user_id",
+        uselist=True
     )
 
 
@@ -31,7 +33,9 @@ class Book(Base):
 
     issues: Mapped["Issue"] = relationship(
         back_populates="book",
-        cascade="delete"
+        cascade="delete",
+        primaryjoin="Book.id == Issue.book_id",
+        uselist=True
     )
 
 
@@ -45,9 +49,11 @@ class Issue(Base):
     return_period: Mapped[datetime.date] = Column(Date, default=(date.today() + timedelta(days=30)))
 
     user: Mapped["User"] = relationship(
-        back_populates="issues"
+        back_populates="issues",
+        primaryjoin="Issue.user_id == User.id"
     )
     book: Mapped["Book"] = relationship(
-        back_populates="issues"
+        back_populates="issues",
+        primaryjoin="Issue.book_id == Book.id"
     )
 

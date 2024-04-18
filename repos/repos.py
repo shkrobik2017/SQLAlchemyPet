@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 from sqlalchemy import inspect, select, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+from sqlalchemy.orm import selectinload
+
 from .models import User, Base, Book, Issue
 from .database import async_session, async_engine
 
@@ -60,7 +62,7 @@ class BookRepository(BaseRepository):
          - last_name: User's last name
          - email: User's email """
         async with self.session as session:
-            query = select(self.model)
+            query = select(self.model).options(selectinload(self.model.issues))
             for attribute, value in kwargs.items():
                 get_attr = getattr(self.model, attribute)
                 query = query.filter(get_attr == value)
@@ -103,7 +105,7 @@ class UserRepository(BaseRepository):
         - author: Book author
         - publication_year: Year of publication of book """
         async with self.session as session:
-            query = select(self.model)
+            query = select(self.model).options(selectinload(self.model.issues))
             for attribute, value in kwargs.items():
                 get_attr = getattr(self.model, attribute)
                 query = query.filter(get_attr == value)
@@ -135,7 +137,7 @@ class IssueRepository(BaseRepository):
         - issue_date: Date of issue (format: datetime.date.today())
         - return_period: Date when book must be returned (format: issue_date + 30 days)"""
         async with self.session as session:
-            query = select(self.model)
+            query = select(self.model).options(selectinload(self.model.book)).options(selectinload(self.model.user))
             for attribute, value in kwargs.items():
                 get_attr = getattr(self.model, attribute)
                 query = query.filter(get_attr == value)

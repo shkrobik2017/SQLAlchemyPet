@@ -37,30 +37,17 @@ async def add_issue(*, user_id: int, book_id: int):
     )
 
 
-async def user_have_book(*, user_fn: str, user_ln: str, user_email: str):
-    books = []
-    issues = []
+async def user_have_book(*, user_id: int):
     user = await user_repo.read_object(
-        first_name=user_fn,
-        last_name=user_ln,
-        email=user_email
+        id=user_id
     )
     if len(user) > 1:
         print("Object more than one")
     elif len(user) == 0:
         print("User not found")
     else:
-        user = user[0].id
-    issue = await issue_repo.read_object(
-        user_id=user
-    )
-    book = await book_repo.read_object()
-    for item in issue:
-        issues.append(item.book_id)
-    for b in book:
-        if b.id in issues:
-            books.append(b)
-    return books
+        return await book_repo.read_object(id=user[0].issues.book_id)
+
 
 
 async def users_overdue_return():
