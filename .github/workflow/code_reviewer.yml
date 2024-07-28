@@ -1,0 +1,23 @@
+name: Run Python Script with Secrets
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+permissions: write-all
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Python script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python ai_code_reviewer.py
