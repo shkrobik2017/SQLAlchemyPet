@@ -13,11 +13,11 @@ class BaseRepository(ABC):
     engine: AsyncEngine = async_engine
 
     @abstractmethod
-    async def read_object(self, **kwargs):
+    async def get_object(self, **kwargs):
         """ Read objects """
 
     @abstractmethod
-    async def insert_object(self, obj: Base):
+    async def add_object(self, obj: Base):
         """ Insert objects """
 
     @abstractmethod
@@ -44,7 +44,7 @@ class BookRepository(BaseRepository):
     model: Book = Book
 
     async def update_object(self, *, book_title: str, book_author: str, book_publication_year: int, **kwargs):
-        obj = await self.read_object(
+        obj = await self.get_object(
             title=book_title,
             author=book_author,
             publication_year=book_publication_year
@@ -55,7 +55,7 @@ class BookRepository(BaseRepository):
 
             await self._commit(item)
 
-    async def read_object(self, **kwargs):
+    async def get_object(self, **kwargs):
         """ In this model you can get the object only by follow variables:
          - id: User id in table (primary key)
          - first_name: User's first name
@@ -70,12 +70,12 @@ class BookRepository(BaseRepository):
 
             return obj.scalars().all()
 
-    async def insert_object(self, obj: Base):
+    async def add_object(self, obj: Base):
         await self._has_table(self.model)
         await self._commit(obj)
 
     async def delete_object(self, **kwargs):
-        obj = await self.read_object(**kwargs)
+        obj = await self.get_object(**kwargs)
 
         for item in obj:
             async with self.session as session:
@@ -87,7 +87,7 @@ class UserRepository(BaseRepository):
     model: User = User
 
     async def update_object(self, *, user_first_name: str, user_last_name: str, user_email: str, **kwargs):
-        obj = await self.read_object(
+        obj = await self.get_object(
             first_name=user_first_name,
             last_name=user_last_name,
             email=user_email
@@ -98,7 +98,7 @@ class UserRepository(BaseRepository):
 
             await self._commit(item)
 
-    async def read_object(self, **kwargs):
+    async def get_object(self, **kwargs):
         """ In this model you can get the object only by follow variables:
         - id: Book id in table (primary key)
         - title: Book title
@@ -113,12 +113,12 @@ class UserRepository(BaseRepository):
 
             return obj.scalars().all()
 
-    async def insert_object(self, obj: Base):
+    async def add_object(self, obj: Base):
         await self._has_table(self.model)
         await self._commit(obj)
 
     async def delete_object(self, **kwargs):
-        obj = await self.read_object(**kwargs)
+        obj = await self.get_object(**kwargs)
 
         for item in obj:
             async with self.session as session:
@@ -129,7 +129,7 @@ class UserRepository(BaseRepository):
 class IssueRepository(BaseRepository):
     model: Issue = Issue
 
-    async def read_object(self, **kwargs):
+    async def get_object(self, **kwargs):
         """ In this model you can get the object only by follow variables:
         - id: Issue id in table (primary key)
         - book_id: Book id (foreign key of books table)
@@ -145,12 +145,12 @@ class IssueRepository(BaseRepository):
 
             return obj.scalars().all()
 
-    async def insert_object(self, obj: Base):
+    async def add_object(self, obj: Base):
         await self._has_table(self.model)
         await self._commit(obj)
 
     async def delete_object(self, **kwargs):
-        obj = await self.read_object(**kwargs)
+        obj = await self.get_object(**kwargs)
 
         for item in obj:
             async with self.session as session:
